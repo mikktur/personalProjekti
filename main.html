@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PLACEHOLDER</title>
+    <link rel="stylesheet" href="style.css" />
+    <link />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+      integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+      crossorigin=""
+    />
+
+    <script
+      src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+      integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+      crossorigin=""
+    ></script>
+  </head>
+  <body>
+    <div class="container">
+      <!-- CONTAINS SEARCH, FAVORITE RESTAURANTS,FILTERS ETC-->
+      <aside class="sidePanel">
+        <div id="contentSection">
+          <h2>PLACEHOLDER</h2>
+
+          <div class="filter">
+            <!--PLACEHOLDER FILL VIA API-->
+            <!--REMINDER: ALSO TEST WITH CHECKBOXES OR SOMEKIND OF AUTOCOMPLETE FORM-->
+            <div class="select-container">
+              <label for="cities">Filter by city</label>
+              <select name="cities" id="cities">
+                <option value="None">None</option>
+                <option value="Tampere">Tampere</option>
+                <option value="Oulu">Oulu</option>
+                <option value="Helsinki">Helsinki</option>
+                <option value="Vantaa">Vantaa</option>
+              </select>
+            </div>
+            <div class="select-container">
+              <label for="companies">Filter by company</label>
+              <select name="companies" id="companies">
+                <option value="None">None</option>
+                <option value="Tampere">1</option>
+                <option value="Oulu">2</option>
+                <option value="Helsinki">3</option>
+                <option value="Vantaa">4</option>
+              </select>
+            </div>
+          </div>
+          <!--VISIBLE ONLY FOR LOGGED USERS-->
+          <!--maybe add favrestaurant infos directly to sidepanel(?)-->
+          <div class="favorites">
+            <h2>FAVORITES HERE</h2>
+            <ul>
+              <li>Favorite 1</li>
+              <li>Favorite 2</li>
+            </ul>
+          </div>
+        </div>
+      </aside>
+      <div class="wrapper">
+        <div class="map" id="map">
+          <div class="dropdown">
+            <!--- CHANGE BUTTON TEXT TO USERNAME WHEN LOGGED IN -->
+            <button class="dropbtn">Login</button>
+            <div class="dropdown-content">
+              <form id="loginForm" style="display: none">
+                <h2>Login</h2>
+                <input type="text" placeholder="Username" />
+                <input type="password" placeholder="Password" />
+                <button type="submit" onclick="login()">Login</button>
+              </form>
+              <!-- USER SETTINGS,LOGOUT ETC AFTER LOGGED IN-->
+              <div class="logged-in-content" id="logged">
+                <a href="#">User Settings</a>
+                <a href="#">Logout</a>
+              </div>
+            </div>
+          </div>
+          <!-- SHOWS MENU NEEDS TO BE FILLED VIA JS-->
+          <div id="settingsModal">
+            <h2>User Settings</h2>
+            <form id="settingsForm">
+              <!--TODO PROFILEPICTURE MAYBE(?)-->
+              <input type="text" placeholder="Name" />
+              <input type="text" placeholder="Surname" />
+              <input type="text" placeholder="Email" />
+              <input type="text" placeholder="City" />
+              <button type="save">Save</button>
+              <button type="cancel">Cancel</button>
+            </form>
+          </div>
+        </div>
+        <div id="restaurantModal" class="modal">
+          <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="restaurantName">MENU</h2>
+            <p id="restaurantDescription">
+              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Optio,
+              quod aliquid consectetur doloremque molestiae nam necessitatibus
+              exercitationem! Adipisci natus, fuga, harum explicabo tempore
+              atque asperiores quas repudiandae totam dicta unde.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--PLACEHOLDER MAP IMPLEMENTED INSIDE JS-->
+    <script>
+      var map = L.map('map').setView([51.505, -0.09], 13);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      }).addTo(map);
+    </script>
+  </body>
+</html>
+<!--TODO
+USER REGISTER FORM
+HOW TO SHOW MENU(TABLE OR LIST)
+POPUPS ON MAP OR SHOW RESTAURANT INFO ON BOTTOMPANEL(?)
+EXPERIMENT WITH DIFFERENT FILTERS
+HOW TO SHOW FAVORITES
+PROFILEPICTURE
+OPENSTREETMAP UGLY :E
+SITENAME
+
+-->
+

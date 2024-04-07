@@ -1,0 +1,165 @@
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.map {
+  flex: 1;
+  position: relative;
+}
+.container {
+  width: 100dvw;
+  height: 100dvh;
+  display: flex;
+}
+.wrapper {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+body {
+  margin: auto;
+  display: flex;
+}
+.sidePanel {
+  display: flex;
+
+  height: 100dvh;
+  width: 15dvw;
+  background-color: rgb(151, 123, 0) e;
+}
+.sidePanel h2 {
+  padding-left: 1rem;
+}
+
+.sidePanel ul {
+  border-width: 1px;
+  border-radius: 30px;
+}
+.sidePanel li {
+  margin: 5px 0;
+  list-style: none;
+  cursor: pointer;
+}
+.sidePanel li:hover {
+  background-color: #f1f1f1;
+}
+.modal {
+  overflow: scroll;
+  display: flex;
+  height: 33dvh;
+  background-color: #e4d8d2;
+  text-align: center;
+  justify-content: center;
+}
+
+.modal-content {
+  width: 30dvw;
+}
+
+.dropdown {
+  position: absolute;
+
+  top: 10px;
+  z-index: 9999;
+  margin: 1rem;
+  right: 10px;
+  pointer-events: all;
+}
+.dropbtn {
+  border: 0;
+  border-radius: 30px;
+  background-color: #4caf50;
+  color: white;
+  padding: 10px;
+  font-size: 16px;
+  z-index: 9999;
+  border: none;
+  cursor: pointer;
+}
+.dropdown-content {
+  justify-content: space-around;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+
+  right: 0px;
+  padding: 0 5px;
+  border: 0;
+  border-radius: 30px;
+  text-wrap: nowrap;
+  background-color: #f9f9f9;
+  min-width: fit-content;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  cursor: default;
+}
+.dropdown-content input {
+  margin: 4px;
+}
+/*CHANGE TO ONCLICK WITH JSCRIPT LATER */
+.dropdown:hover .dropdown-content {
+  display: flex;
+}
+.dropdown-content form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.dropdown-content a:hover {
+  background-color: #f1f1f1;
+}
+.dropdown-content a {
+  color: black;
+  margin: 1rem;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  white-space: nowrap;
+}
+.filter {
+  display: flex;
+  flex-direction: column;
+}
+.filter * {
+  margin: 5px;
+  text-align: center;
+}
+.filter select {
+  width: 100px;
+}
+label {
+  display: inline-block;
+  width: 140px; /* Adjust width as needed */
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.filter .select-container {
+  padding: 0 10px;
+}
+#settingsModal {
+  border: 0;
+  border-radius: 30px;
+  text-align: center;
+  padding: 2rem 3rem;
+  display: flex;
+  position: absolute;
+  z-index: 9999;
+  top: 20%;
+  left: 50%;
+  background-color: #fffdfd;
+  flex-direction: column;
+}
+#settingsForm {
+  display: flex;
+  flex-direction: column;
+}
+#settingsForm input {
+  margin: 5px;
+}
+
+#settingsForm button {
+  margin-top: 1rem;
+}
+
