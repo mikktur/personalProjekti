@@ -1,5 +1,5 @@
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 .map {
   flex: 1;
@@ -19,12 +19,30 @@ body {
   margin: auto;
   display: flex;
 }
+.sidePanelContainer {
+  position: relative;
+}
+#showSide {
+  width: 2rem;
+  position: absolute;
+  top: 50%;
+  right: -2rem;
+  height: 100%;
+  transform: translateY(-50%);
+  z-index: 9999;
+}
 .sidePanel {
   display: flex;
 
   height: 100dvh;
-  width: 15dvw;
+  width: 0;
   background-color: rgb(151, 123, 0) e;
+  transition: width 0.3s ease-in-out;
+}
+.sidePanel.active {
+  width: 300px;
+}
+#contentSection {
 }
 .sidePanel h2 {
   padding-left: 1rem;
@@ -42,22 +60,27 @@ body {
 .sidePanel li:hover {
   background-color: #f1f1f1;
 }
+#restaurantModal.active {
+  height: 600px;
+}
 .modal {
   overflow: scroll;
   display: flex;
-  height: 33dvh;
+  height: 0;
   background-color: #e4d8d2;
   text-align: center;
   justify-content: center;
+  transition: height 0.3s ease-in-out;
 }
 
 .modal-content {
   width: 30dvw;
 }
-
+.dropdown-content.show {
+  display: flex;
+}
 .dropdown {
   position: absolute;
-
   top: 10px;
   z-index: 9999;
   margin: 1rem;
@@ -74,15 +97,18 @@ body {
   z-index: 9999;
   border: none;
   cursor: pointer;
+  position: absolute;
+  top: 2rem;
+  right: 5rem;
 }
 .dropdown-content {
   justify-content: space-around;
   align-items: center;
-  display: flex;
+  display: none;
   flex-direction: column;
   position: absolute;
-
-  right: 0px;
+  top: 3rem;
+  right: 1rem;
   padding: 0 5px;
   border: 0;
   border-radius: 30px;
@@ -97,9 +123,7 @@ body {
   margin: 4px;
 }
 /*CHANGE TO ONCLICK WITH JSCRIPT LATER */
-.dropdown:hover .dropdown-content {
-  display: flex;
-}
+
 .dropdown-content form {
   display: flex;
   flex-direction: column;
@@ -143,7 +167,7 @@ label {
   border-radius: 30px;
   text-align: center;
   padding: 2rem 3rem;
-  display: flex;
+  display: none;
   position: absolute;
   z-index: 9999;
   top: 20%;
@@ -162,4 +186,3 @@ label {
 #settingsForm button {
   margin-top: 1rem;
 }
-
