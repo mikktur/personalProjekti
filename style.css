@@ -57,14 +57,20 @@ body {
   list-style: none;
   cursor: pointer;
 }
+.close {
+  position: absolute;
+  top: 0;
+  right: 2rem;
+}
 .sidePanel li:hover {
   background-color: #f1f1f1;
 }
 #restaurantModal.active {
-  height: 600px;
+  height: 50dvh;
 }
 .modal {
-  overflow: scroll;
+  position: relative;
+  overflow: hidden auto;
   display: flex;
   height: 0;
   background-color: #e4d8d2;
@@ -74,7 +80,38 @@ body {
 }
 
 .modal-content {
-  width: 30dvw;
+  width: 50%;
+
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#tabs {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  height: 3rem;
+  z-index: 99999;
+  justify-content: center;
+}
+#tabs button {
+  height: 3rem;
+  width: calc(100% / 5);
+  justify-content: space-evenly;
+  background-color: #f1f1f1;
+}
+#tabs button.active {
+  background-color: #9c9a9a;
+}
+table {
+  width: 100%;
+  border: 1px solid black;
+}
+th,
+td {
+  padding: 1rem;
 }
 .dropdown-content.show {
   display: flex;
@@ -100,6 +137,10 @@ body {
   position: absolute;
   top: 2rem;
   right: 5rem;
+}
+
+#menu-content {
+  width: 100%;
 }
 .dropdown-content {
   justify-content: space-around;

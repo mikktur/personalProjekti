@@ -103,8 +103,24 @@
         </div>
         <div id="restaurantModal" class="modal">
           <div class="modal-content">
-            <span class="close">&times;</span>
+            <div id="tabs">
+              <button class="tablinks" data-day="maanantai">Maanantai</button>
+              <button class="tablinks" data-day="tiistai">Tiistai</button>
+              <button class="tablinks" data-day="keskiviikko">
+                Keskiviikko
+              </button>
+              <button class="tablinks" data-day="torstai">Torstai</button>
+              <button class="tablinks" data-day="perjantai">Perjantai</button>
+            </div>
+            <div id="menu-content">
+              <div id="maanantaiMenu" class="menu-content"></div>
+              <div id="tiistaiMenu" class="menu-content"></div>
+              <div id="keskiviikkoMenu" class="menu-content"></div>
+              <div id="torstaiMenu" class="menu-content"></div>
+              <div id="perjantaiMenu" class="menu-content"></div>
+            </div>
           </div>
+          <span class="close">&times;</span>
         </div>
       </div>
     </div>

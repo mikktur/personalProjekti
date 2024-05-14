@@ -25,6 +25,21 @@ async function fetchData(url, options) {
     throw error;
   }
 }
+const setToCurrentLocation = () => {
+  if ("geolocation" in navigator) {
+    navigator.geolocation.getCurrentPosition(
+      function (position) {
+        var coords = [position.coords.latitude, position.coords.longitude];
+        map.setView(coords, 13);
+      },
+      function (error) {
+        console.error("Error getting user location:", error.message);
+      }
+    );
+  } else {
+    console.error("Geolocation is not supported in this browser.");
+  }
+};
 
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution:
@@ -46,8 +61,8 @@ document.addEventListener("click", (e) => {
 });
 const addMarkersToMap = async () => {
   const restaurants = await fetchData(apiUrl + "restaurants");
+  console.log(restaurants);
   restaurants.forEach(({ location, name, address, phone, _id }) => {
-    console.log(_id);
     L.geoJSON(location)
       .bindPopup(
         `<h2>${name}</h2>
@@ -70,11 +85,102 @@ const addMarkersToMap = async () => {
     }
   });
 };
+const initializeTabs = () => {
+  const hideAllTabs = () => {
+    const menuTabs = document.querySelectorAll(".menu-content");
+    menuTabs.forEach((tab) => {
+      tab.style.display = "none";
+    });
+    const tabs = document.querySelectorAll(".tablinks");
+    tabs.forEach((button) => {
+      button.classList.remove("active");
+    });
+  };
 
-const renderMenu = async (id) => {
-  console.log(id);
-  const dailyMenu = await fetchData(`${apiUrl}restaurants/daily/${id}/fi`);
-  console.log(dailyMenu);
-  const menuModal = document.querySelector("#modal-content");
+  const showMenuTab = (tabId) => {
+    const menuTab = document.querySelector(`#${tabId}`);
+    menuTab.style.display = "block";
+  };
+
+  const tabButtons = document.querySelectorAll(".tablinks");
+  tabButtons.forEach((button) => {
+    button.addEventListener("click", (event) => {
+      const tabId = event.target.getAttribute("data-day") + "Menu";
+      hideAllTabs();
+      event.target.classList.add("active");
+      showMenuTab(tabId);
+    });
+  });
 };
+initializeTabs();
+const renderMenu = async (id) => {
+  try {
+    const { days } = await fetchData(`${apiUrl}restaurants/weekly/${id}/fi`);
+    console.log(days);
+    const menuTabs = document.querySelectorAll(".menu-content");
+    menuTabs.forEach((tab) => {
+      tab.style.display = "none";
+    });
+    const currentDate = new Date()
+      .toLocaleDateString("fi", { weekday: "long" })
+      .toLowerCase();
+    days.forEach(({ date, courses }) => {
+      const weekday = date.split(" ")[0].toLowerCase();
+      console.log(weekday);
+      const menuTab = document.querySelector(`#${weekday}Menu`);
+      menuTab.innerHTML = "";
+      if (courses.length === 0) {
+        menuTab.innerHTML = "<span>NO MENU AVAILABLE</span>";
+        menuTab.classList.add("randomclass");
+      } else {
+        const menuTable = document.createElement("table");
+        menuTable.classList.add("menu");
+        menuTab.appendChild(menuTable);
+        const tr = document.createElement("tr");
+        const thName = document.createElement("th");
+        const thPrice = document.createElement("th");
+        const thDiet = document.createElement("th");
+        thDiet.innerText = "Allergeenit";
+        thName.innerText = "Nimi";
+        thPrice.innerHTML = "Hinta";
+        tr.append(thName, thPrice, thDiet);
+        menuTable.appendChild(tr);
+
+        courses.forEach((course) => {
+          const tr = document.createElement("tr");
+          const mName = document.createElement("td");
+          const mPrice = document.createElement("td");
+          const mDiet = document.createElement("td");
+          mName.innerText = course.name;
+
+          mPrice.innerText = course.price ? course.price : "Ei tiedossa";
+
+          mDiet.innerText = course.diets ? course.diets : "Ei tiedossa";
+          tr.append(mName, mPrice, mDiet);
+          menuTable.append(tr);
+        });
+      }
+    });
+
+    const tabs = document.querySelectorAll(".tablinks");
+    tabs.forEach((button) => {
+      button.classList.remove("active");
+    });
+    const activeButton = document.querySelector(
+      `button[data-day="${currentDate}"]`
+    );
+    activeButton.classList.toggle("active");
+    const activeTab = document.querySelector("#" + currentDate + "Menu");
+    activeTab.style.display = "block";
+  } catch (e) {
+    menuModal.insertAdjacentHTML = `<h2>${e.message}</h2>`;
+  }
+  menuModal.classList.toggle("active");
+};
+
+document.addEventListener("click", (e) => {
+  if (!e.target.closest("#restaurantModal")) {
+    menuModal.classList.remove("active");
+  }
+});
 addMarkersToMap();
