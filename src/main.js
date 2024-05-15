@@ -38,6 +38,22 @@ registerLink.addEventListener('click', (e) => {
   const registerDia = document.querySelector('#register-dialog');
   registerDia.showModal();
 });
+
+const setToCurrentLocation = () => {
+  if ('geolocation' in navigator) {
+    navigator.geolocation.getCurrentPosition(
+      function (position) {
+        var coords = [position.coords.latitude, position.coords.longitude];
+        map.setView(coords, 13);
+      },
+      function (error) {
+        console.error('Error getting user location:', error.message);
+      }
+    );
+  } else {
+    console.error('Geolocation is not supported in this browser.');
+  }
+};
 async function fetchData(url, options) {
   try {
     const response = await fetch(url, options);
@@ -86,24 +102,10 @@ const addFilterSelections = async (user) => {
   });
 };
 
-const setToCurrentLocation = () => {
-  if ('geolocation' in navigator) {
-    navigator.geolocation.getCurrentPosition(
-      function (position) {
-        var coords = [position.coords.latitude, position.coords.longitude];
-        map.setView(coords, 13);
-      },
-      function (error) {
-        console.error('Error getting user location:', error.message);
-      }
-    );
-  } else {
-    console.error('Geolocation is not supported in this browser.');
-  }
-};
-
-const addMarkersToMap = async (user) => {
+const addMarkersToMap = async (logged) => {
   const restaurants = await fetchData(apiUrl + 'restaurants');
+  const user = logged ? JSON.parse(sessionStorage.getItem('user')) : '';
+  const favorite = logged ? user.favouriteRestaurant : '';
   console.log(restaurants);
 
   map.eachLayer((layer) => {
@@ -114,22 +116,33 @@ const addMarkersToMap = async (user) => {
 
   restaurants.forEach(({location, name, address, phone, _id, city}) => {
     if (filters.length === 0 || filters.includes(city)) {
-      let marker;
-      if (city === 'Helsinki') {
-        // Customize marker for Helsinki
-        marker = L.marker(location, {icon: helsinkiIcon});
-      } else {
-        // Default marker for other cities
-        marker = L.marker(location);
+      let icon = false;
+      const meatIcon = L.icon({
+        iconUrl: 'meat.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [-3, -76],
+      });
+      [location.coordinates[0], location.coordinates[1]] = [
+        location.coordinates[1],
+        location.coordinates[0],
+      ];
+      if (user) {
+        if (_id === favorite) {
+          console.log('test');
+          icon = true;
+        }
       }
-
-      marker
+      const marker = L.marker(
+        location.coordinates,
+        icon ? {icon: meatIcon} : {}
+      )
         .bindPopup(
           `<h2>${name}</h2>
           <p>${address}</p>
           <p>${phone}</p>
           <a class="menu-link" data-id='${_id}'>Menu</a><br>
-          <a  id="favorite" data-id='${_id}'>Add to Favorites!</a>`
+          <a  id="favorite" data-id='${_id}'>add to favorites!</a>`
         )
         .addTo(map);
 
@@ -150,7 +163,13 @@ const addMarkersToMap = async (user) => {
             const id = this.getAttribute('data-id');
             console.log(id);
             const token = sessionStorage.getItem('token');
-            await updateFavorite(token, id);
+            try {
+              const newUser = await updateFavorite(token, id);
+              sessionStorage.setItem('user', JSON.stringify(newUser.data));
+              addMarkersToMap(user);
+            } catch (e) {
+              console.error(e.message);
+            }
           }
         });
       });
@@ -172,7 +191,7 @@ const updateFavorite = async (token, restaurant) => {
   };
   try {
     const result = await fetchData(apiUrl + `users`, options);
-    console.log(result);
+    return result;
   } catch (e) {
     console.log(e);
   }
@@ -397,13 +416,14 @@ const checkSession = async () => {
 };
 
 (async () => {
+  await setToCurrentLocation();
   const user = await checkSession();
   console.log(user);
   if (user) {
     document.getElementById('avatar-container').style.display = 'block';
     document.getElementById('logged').style.display = 'block';
-    addMarkersToMap(user);
-    addFilterSelections(user);
+    addMarkersToMap(true);
+    addFilterSelections(true);
   } else {
     document.getElementById('loginBtn').style.display = 'flex';
     document.getElementById('logged-out').style.display = 'flex';
