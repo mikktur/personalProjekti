@@ -88,7 +88,7 @@ async function fetchData(url, options) {
     throw error;
   }
 }
-const addFilterSelections = async (user) => {
+const addFilterSelections = async (logged) => {
   const cityFilterDiv = document.querySelector('#city-filters');
   const restaurants = await fetchData(apiUrl + 'restaurants');
   const cities = [
@@ -114,7 +114,7 @@ const addFilterSelections = async (user) => {
           filters.splice(index, 1);
         }
       }
-      addMarkersToMap(user);
+      addMarkersToMap(logged);
     });
     checklabelpair.append(label, checkbox);
     cityFilterDiv.append(checklabelpair);
@@ -137,21 +137,21 @@ const addMarkersToMap = async (logged) => {
       let popHtml = `<h2>${name}</h2>
       <p>${address}</p>
       <p>${phone}</p>
-      <a class="menu-link" data-id='${_id}'>Menu</a><br>
+      <a class="menu-link" data-id='${_id}'>Näytä menu</a><br>
       `;
       let icon = false;
       const meatIcon = L.icon({
-        iconUrl: 'meat.png',
+        iconUrl: 'img/meat.png',
         iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [-3, -76],
+        iconAnchor: [15, 41],
+        popupAnchor: [-3, -40],
       });
       [location.coordinates[0], location.coordinates[1]] = [
         location.coordinates[1],
         location.coordinates[0],
       ];
       if (user) {
-        popHtml += `<a  id="favorite" data-id='${_id}'><img src="favourite.png"></a>`;
+        popHtml += `<a  id="favorite" data-id='${_id}'><img src="img/favourite.png"></a>`;
         if (_id === favorite) {
           icon = true;
         }
