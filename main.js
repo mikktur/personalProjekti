@@ -25,6 +25,30 @@ async function fetchData(url, options) {
     throw error;
   }
 }
+const addFilterSelections = async () => {
+  const cityFilterDiv = document.querySelector("#city-filters");
+  const restaurants = await fetchData(apiUrl + "restaurants");
+  const cities = [
+    ...new Set(restaurants.filter((r) => r.city).map((r) => r.city)),
+  ];
+  cities.forEach((city) => {
+    const checklabelpair = document.createElement("div");
+    checklabelpair.classList.add("checkbox");
+    const label = document.createElement("label");
+    label.setAttribute("for", city);
+    label.innerText = city;
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.id = city;
+    checkbox.name = city;
+    checkbox.value = city;
+    checklabelpair.append(label, checkbox);
+    cityFilterDiv.append(checklabelpair);
+  });
+
+  console.log(cities);
+};
+addFilterSelections();
 const setToCurrentLocation = () => {
   if ("geolocation" in navigator) {
     navigator.geolocation.getCurrentPosition(
@@ -62,16 +86,17 @@ document.addEventListener("click", (e) => {
 const addMarkersToMap = async () => {
   const restaurants = await fetchData(apiUrl + "restaurants");
   console.log(restaurants);
-  restaurants.forEach(({ location, name, address, phone, _id }) => {
-    L.geoJSON(location)
-      .bindPopup(
-        `<h2>${name}</h2>
+  restaurants.forEach(({ location, name, address, phone, _id, city }) => {
+    if (city === "Helsinki")
+      L.geoJSON(location)
+        .bindPopup(
+          `<h2>${name}</h2>
         <p>${address}</p>
          <p>${phone}</p>
          <a class="menu-link" data-id='${_id}'>Menu</a>
     `
-      )
-      .addTo(map);
+        )
+        .addTo(map);
   });
   map.on("popupopen", function (e) {
     const popup = e.popup;

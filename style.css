@@ -40,10 +40,26 @@ body {
   transition: width 0.3s ease-in-out;
 }
 .sidePanel.active {
-  width: 300px;
+  width: 350px;
+}
+#city-filters {
+  display: flex;
+  justify-content: row;
+  flex-wrap: wrap;
+  width: 100%;
+}
+.checkbox {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden auto;
+  font-size: 15px;
+  width: calc(90% / 3);
 }
 #contentSection {
 }
+
 .sidePanel h2 {
   padding-left: 1rem;
 }
