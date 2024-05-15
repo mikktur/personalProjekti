@@ -2,7 +2,7 @@
   box-sizing: border-box;
 }
 body {
-  font-family: "Roboto", sans-serif;
+  font-family: 'Roboto', sans-serif;
   margin: 0;
   padding: 0;
   background-color: #ffffff;
@@ -40,7 +40,7 @@ body {
 }
 .sidePanel {
   display: flex;
-
+  overflow: hidden;
   height: 100dvh;
   width: 0;
   transition: width 0.3s ease-in-out;
@@ -271,13 +271,17 @@ label {
   border-radius: 30px;
   text-align: center;
   padding: 2rem 3rem;
-  display: none;
-  position: absolute;
-  z-index: 9999;
-  top: 20%;
-  left: 50%;
+  width: 30%;
+  max-width: 400px;
+
   background-color: #fffdfd;
   flex-direction: column;
+}
+.leaflet-popup-content {
+  font-size: 15px;
+}
+.leaflet-popup-content a {
+  cursor: pointer;
 }
 #settingsForm {
   display: flex;
@@ -290,3 +294,4 @@ label {
 #settingsForm button {
   margin-top: 1rem;
 }
+

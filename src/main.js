@@ -4,6 +4,7 @@ const menuModal = document.querySelector('#restaurantModal');
 const dropBtn = document.querySelectorAll('.dropbtn');
 const dropDown = document.querySelector('.dropdown-content');
 const settingsLink = document.getElementById('settings-link');
+const settingsForm = document.getElementById('settingsForm');
 const apiUrl = 'https://10.120.32.94/restaurant/api/v1/';
 var map = L.map('map').setView([60.19, 24.94], 13);
 const filters = [];
@@ -26,8 +27,22 @@ dropBtn.forEach((btn) => {
 settingsLink.addEventListener('click', (e) => {
   e.preventDefault();
   e.stopPropagation();
-  document.getElementById('settingsModal').style.display = 'flex';
+
+  renderSettingsForm();
+  document.getElementById('settingsModal').showModal();
 });
+const renderSettingsForm = () => {
+  const {username, email} = JSON.parse(sessionStorage.getItem('user'));
+  settingsForm.innerHTML = `<input type="text" name="username" placeholder="${username}" />
+  <input type="password" name="password" placeholder="password" />
+  <input type="text" name="email" placeholder="${email}" />
+  <button type="submit">Save</button>
+  <button type="button" id="cancelButton">Cancel</button>`;
+  document.getElementById('cancelButton').addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('settingsModal').close();
+  });
+};
 document.addEventListener('click', (e) => {
   if (!e.target.closest('.dropdown-content')) {
     dropDown.classList.remove('show');
@@ -164,7 +179,7 @@ const addMarkersToMap = async (logged) => {
             console.log(id);
             const token = sessionStorage.getItem('token');
             try {
-              const newUser = await updateFavorite(token, id);
+              const newUser = await updateInfo(token, id);
               sessionStorage.setItem('user', JSON.stringify(newUser.data));
               addMarkersToMap(user);
             } catch (e) {
@@ -177,9 +192,29 @@ const addMarkersToMap = async (logged) => {
   });
 };
 
-const updateFavorite = async (token, restaurant) => {
+settingsForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+
+  const formData = new FormData(e.target);
+  const username = formData.get('username');
+  const password = formData.get('password');
+  const email = formData.get('email');
+  const token = sessionStorage.getItem('token');
+  try {
+    await updateInfo(token, undefined, username, password, email);
+    location.reload();
+  } catch (e) {
+    console.error(e.message);
+  }
+});
+// not sure if this is a good approach but it works...
+const updateInfo = async (token, restaurant, username, password, email) => {
   const bodyContent = {
-    favouriteRestaurant: restaurant,
+    username: username ? username : undefined,
+    favouriteRestaurant: restaurant ? restaurant : undefined,
+    password: password ? password : undefined,
+    email: email ? email : undefined,
   };
   const options = {
     method: 'PUT',
@@ -193,7 +228,7 @@ const updateFavorite = async (token, restaurant) => {
     const result = await fetchData(apiUrl + `users`, options);
     return result;
   } catch (e) {
-    console.log(e);
+    throw e;
   }
 };
 document
@@ -202,7 +237,6 @@ document
     event.preventDefault();
 
     const formData = new FormData(event.target);
-    console.log(formData);
     register(formData);
     event.target.reset();
   });
@@ -392,6 +426,7 @@ document.addEventListener('click', (e) => {
     menuModal.classList.remove('active');
   }
 });
+
 const checkSession = async () => {
   if (sessionStorage.getItem('token') && sessionStorage.getItem('user')) {
     try {
@@ -420,6 +455,7 @@ const checkSession = async () => {
   const user = await checkSession();
   console.log(user);
   if (user) {
+    sessionStorage.setItem('user', JSON.stringify(user));
     document.getElementById('avatar-container').style.display = 'block';
     document.getElementById('logged').style.display = 'block';
     addMarkersToMap(true);
