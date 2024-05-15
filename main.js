@@ -8,6 +8,30 @@ const dropDown = document.querySelector(".dropdown-content");
 const apiUrl = "https://10.120.32.94/restaurant/api/v1/";
 var map = L.map("map").setView([60.19, 24.94], 13);
 const filters = [];
+const registerLink = document.querySelector("#register");
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution:
+    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+}).addTo(map);
+button.addEventListener("click", (e) => {
+  e.preventDefault();
+  sidePane.classList.toggle("active");
+});
+dropBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  e.preventDefault();
+  dropDown.classList.toggle("show");
+});
+document.addEventListener("click", (e) => {
+  if (!e.target.closest(".dropdown-content")) {
+    dropDown.classList.remove("show");
+  }
+});
+registerLink.addEventListener("click", (e) => {
+  e.preventDefault();
+  const registerDia = document.querySelector("#register-dialog");
+  registerDia.showModal();
+});
 async function fetchData(url, options) {
   try {
     const response = await fetch(url, options);
@@ -72,24 +96,6 @@ const setToCurrentLocation = () => {
   }
 };
 
-L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  attribution:
-    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-}).addTo(map);
-button.addEventListener("click", (e) => {
-  e.preventDefault();
-  sidePane.classList.toggle("active");
-});
-dropBtn.addEventListener("click", (e) => {
-  e.stopPropagation();
-  e.preventDefault();
-  dropDown.classList.toggle("show");
-});
-document.addEventListener("click", (e) => {
-  if (!e.target.closest(".dropdown-content")) {
-    dropDown.classList.remove("show");
-  }
-});
 const addMarkersToMap = async () => {
   const restaurants = await fetchData(apiUrl + "restaurants");
   console.log("test");
@@ -126,6 +132,37 @@ const addMarkersToMap = async () => {
   });
 };
 document
+  .getElementById("register-form")
+  .addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    const formData = new FormData(event.target);
+    console.log(formData);
+    register(formData);
+    event.target.reset();
+  });
+const register = async (formData) => {
+  const bodyContent = {
+    username: formData.get("username"),
+    password: formData.get("password"),
+    email: formData.get("email"),
+  };
+  console.log(bodyContent);
+  const options = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(bodyContent),
+  };
+  try {
+    const result = await fetchData(apiUrl + `users`, options);
+    console.log(result);
+  } catch (e) {
+    console.log(e);
+  }
+};
+document
   .getElementById("loginForm")
   .addEventListener("submit", function (event) {
     event.preventDefault();
@@ -137,6 +174,7 @@ document
     login(username, password);
     event.target.reset();
   });
+
 const login = async (userName, password) => {
   const bodyContent = {
     username: userName,
@@ -151,7 +189,12 @@ const login = async (userName, password) => {
   };
   try {
     const result = await fetchData(apiUrl + `auth/login`, options);
-    console.log(result);
+    if (result) {
+      console.log(result);
+      sessionStorage.setItem("token", result.token);
+      sessionStorage.setItem("user", JSON.stringify(result.data));
+      console.log(sessionStorage.getItem("token"));
+    }
   } catch (e) {
     const loginerror = document.querySelector("#login-error");
     loginerror.innerText = e.message;
@@ -276,4 +319,33 @@ document.addEventListener("click", (e) => {
     menuModal.classList.remove("active");
   }
 });
-addMarkersToMap();
+const checkSession = async () => {
+  if (sessionStorage.getItem("token") && sessionStorage.getItem("user")) {
+    try {
+      const fetchOptions = {
+        headers: {
+          Authorization: "Bearer " + sessionStorage.getItem("token"),
+        },
+      };
+      const response = await fetch(apiUrl + "users/token", fetchOptions);
+      const json = await response.json();
+      if (!response.ok) {
+        return false;
+      } else {
+        return json;
+      }
+    } catch (e) {
+      console.log(e.message);
+    }
+  } else {
+    return false;
+  }
+};
+(async () => {
+  const user = await checkSession();
+  if (user) {
+    console.log("logged in");
+  } else {
+    addMarkersToMap();
+  }
+})();
