@@ -300,8 +300,12 @@ label {
   right: 10dvw;
   transform: translate(50%, 50%);
 }
+a:hover {
+  cursor: pointer;
+}
 #showSide {
   margin-top: 2rem;
+  cursor: pointer;
 }
 #showSide img {
   width: 50px;
