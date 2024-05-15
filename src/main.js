@@ -6,6 +6,7 @@ const dropBtn = document.querySelectorAll('.dropbtn');
 const dropDown = document.querySelector('.dropdown-content');
 const settingsLink = document.getElementById('settings-link');
 const settingsForm = document.getElementById('settingsForm');
+const registerDia = document.querySelector('#register-dialog');
 const apiUrl = 'https://10.120.32.94/restaurant/api/v1/';
 var map = L.map('map').setView([60.19, 24.94], 13);
 const filters = [];
@@ -54,7 +55,6 @@ document.addEventListener('click', (e) => {
 });
 registerLink.addEventListener('click', (e) => {
   e.preventDefault();
-  const registerDia = document.querySelector('#register-dialog');
   registerDia.showModal();
 });
 
@@ -120,7 +120,25 @@ const addFilterSelections = async (logged) => {
     cityFilterDiv.append(checklabelpair);
   });
 };
+const showToast = (message) => {
+  const toast = document.createElement('div');
+  toast.innerText = message;
+  toast.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+  toast.style.color = 'white';
+  toast.style.padding = '10px';
+  toast.style.borderRadius = '5px';
+  toast.style.marginBottom = '10px';
+  toast.style.fontSize = '20px';
+  toast.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.5)';
+  const toastContainer = document.querySelector('#toastContainer');
+  toastContainer.appendChild(toast);
+  toastContainer.style.right = '50dvw';
+  toastContainer.style.top = '40dvh';
 
+  setTimeout(() => {
+    toast.remove();
+  }, 4000);
+};
 const addMarkersToMap = async (logged) => {
   const restaurants = await fetchData(apiUrl + 'restaurants');
   const user = logged ? JSON.parse(sessionStorage.getItem('user')) : '';
@@ -233,6 +251,7 @@ const updateInfo = async (token, restaurant, username, email) => {
     throw e;
   }
 };
+
 document
   .getElementById('register-form')
   .addEventListener('submit', async function (event) {
@@ -240,10 +259,14 @@ document
 
     const formData = new FormData(event.target);
     try {
-      await register(formData);
-      event.target.reset();
+      const result = await register(formData);
+      if (result) {
+        event.target.reset();
+        registerDia.close();
+        showToast('Rekisteröinti onnistui, voit nyt kirjautua sisään');
+      }
     } catch (e) {
-      console.log(e.message);
+      console.log(e);
     }
   });
 const register = async (formData) => {
@@ -262,6 +285,7 @@ const register = async (formData) => {
   };
   try {
     const result = await fetchData(apiUrl + `users`, options);
+    return result;
   } catch (e) {
     throw e;
   }

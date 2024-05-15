@@ -293,6 +293,13 @@ label {
   display: flex;
   justify-content: center;
 }
+#toastContainer {
+  z-index: 99999;
+  position: fixed;
+  top: 3.5rem;
+  right: 10dvw;
+  transform: translate(50%, 50%);
+}
 #showSide {
   margin-top: 2rem;
 }

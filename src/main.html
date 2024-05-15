@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PLACEHOLDER</title>
     <link rel="stylesheet" href="style.css" />
-    <link />
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
@@ -18,13 +17,12 @@
       integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
       crossorigin=""
     ></script>
-    <script type="module" src="main.js"></script>
+    <script src="main.js" defer></script>
   </head>
   <body>
     <div class="container">
       <!-- CONTAINS SEARCH, FAVORITE RESTAURANTS,FILTERS ETC-->
       <div class="sidePanelContainer">
-
         <!-- CONTAINS SEARCH, FAVORITE RESTAURANTS, FILTERS, ETC-->
         <aside class="sidePanel">
           <button id="hideSide">
@@ -37,24 +35,35 @@
             </div>
           </div>
         </aside>
-
       </div>
-      <div id="sidepanel2"><a id="showSide"><img src="img/menuIcon.png">
-      <a></div>
+      <div id="sidepanel2">
+        <a id="showSide"><img src="img/menuIcon.png" alt="menuIcon" /></a>
+      </div>
 
       <div class="wrapper">
-        <a class="dropbtn" id="loginBtn"style="display: none;" >Login</a>
-        <a><div id="avatar-container" class="dropbtn" style="display: none;">
-          <img id="avatar-img" src="img/user-avatar.svg" alt="Avatar">
-        </div>
+        <a class="dropbtn" id="loginBtn" style="display: none">Login</a>
+        <a
+          ><div id="avatar-container" class="dropbtn" style="display: none">
+            <img id="avatar-img" src="img/user-avatar.svg" alt="Avatar" />
+          </div>
         </a>
         <div class="dropdown">
           <div class="dropdown-content">
-            <div id="logged-out"style="display: none">
+            <div id="logged-out" style="display: none">
               <form id="loginForm">
                 <h3>Login</h3>
-                <input type="text"id="username" name="username" placeholder="Username" />
-                <input type="password"id="password" name="password" placeholder="Password" />
+                <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  placeholder="Username"
+                />
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="Password"
+                />
                 <span id="login-error"></span>
                 <button type="submit">Login</button>
               </form>
@@ -67,9 +76,7 @@
             </div>
           </div>
         </div>
-        <div class="map" id="map">
-
-        </div>
+        <div class="map" id="map"></div>
         <div id="restaurantModal" class="modal">
           <div class="modal-content">
             <div id="tabs">
@@ -97,15 +104,20 @@
         </div>
       </div>
     </div>
+    <div id="toastContainer"></div>
     <dialog id="register-dialog">
-      <h2>Register</h3>
-        <form id="register-form" action="/register" method="POST">
-          <input type="text" id="username" name="username" placeholder="Enter your username">
-          <input type="password" id="password" name="password" placeholder="Enter your password">
-          <input type="email" id="email" name="email" placeholder="Enter your email">
-          <button type="submit">Register</button>
-        </form>
-
+      <h2>Register</h2>
+      <form id="register-form" action="/register" method="POST">
+        <input type="text" name="username" placeholder="Enter your username" />
+        <input
+          type="password"
+          name="password"
+          placeholder="Enter your password"
+        />
+        <input type="email" name="email" placeholder="Enter your email" />
+        <span id="register-error"></span>
+        <button type="submit">Register</button>
+      </form>
     </dialog>
     <dialog id="settingsModal">
       <h2>User Settings</h2>
@@ -113,7 +125,6 @@
         <!--TODO PROFILEPICTURE MAYBE(?)-->
       </form>
     </dialog>
-</div>
   </body>
 </html>
 <!--TODO
@@ -127,3 +138,4 @@ OPENSTREETMAP UGLY :E
 SITENAME
 
 -->
+
