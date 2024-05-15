@@ -269,6 +269,11 @@ document
       console.log(e);
     }
   });
+registerDia.addEventListener('click', (event) => {
+  if (event.target === registerDia) {
+    registerDia.close();
+  }
+});
 const register = async (formData) => {
   const bodyContent = {
     username: formData.get('username'),

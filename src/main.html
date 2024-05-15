@@ -106,18 +106,24 @@
     </div>
     <div id="toastContainer"></div>
     <dialog id="register-dialog">
-      <h2>Register</h2>
-      <form id="register-form" action="/register" method="POST">
-        <input type="text" name="username" placeholder="Enter your username" />
-        <input
-          type="password"
-          name="password"
-          placeholder="Enter your password"
-        />
-        <input type="email" name="email" placeholder="Enter your email" />
-        <span id="register-error"></span>
-        <button type="submit">Register</button>
-      </form>
+      <div id="registerdia-wrap">
+        <h2>Register</h2>
+        <form id="register-form" action="/register" method="POST">
+          <input
+            type="text"
+            name="username"
+            placeholder="Enter your username"
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Enter your password"
+          />
+          <input type="email" name="email" placeholder="Enter your email" />
+          <span id="register-error"></span>
+          <button type="submit">Register</button>
+        </form>
+      </div>
     </dialog>
     <dialog id="settingsModal">
       <h2>User Settings</h2>
