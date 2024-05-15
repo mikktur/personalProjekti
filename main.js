@@ -7,7 +7,7 @@ const dropBtn = document.querySelector(".dropbtn");
 const dropDown = document.querySelector(".dropdown-content");
 const apiUrl = "https://10.120.32.94/restaurant/api/v1/";
 var map = L.map("map").setView([60.19, 24.94], 13);
-
+const filters = [];
 async function fetchData(url, options) {
   try {
     const response = await fetch(url, options);
@@ -41,12 +41,21 @@ const addFilterSelections = async () => {
     checkbox.type = "checkbox";
     checkbox.id = city;
     checkbox.name = city;
-    checkbox.value = city;
+
+    checkbox.addEventListener("change", function () {
+      if (this.checked) {
+        filters.push(city);
+      } else {
+        const index = filters.indexOf(city);
+        if (index !== -1) {
+          filters.splice(index, 1);
+        }
+      }
+      addMarkersToMap();
+    });
     checklabelpair.append(label, checkbox);
     cityFilterDiv.append(checklabelpair);
   });
-
-  console.log(cities);
 };
 addFilterSelections();
 const setToCurrentLocation = () => {
@@ -85,27 +94,35 @@ document.addEventListener("click", (e) => {
 });
 const addMarkersToMap = async () => {
   const restaurants = await fetchData(apiUrl + "restaurants");
-  console.log(restaurants);
+  console.log("test");
+
+  map.eachLayer((layer) => {
+    if (layer instanceof L.Marker) {
+      map.removeLayer(layer);
+    }
+  });
+
   restaurants.forEach(({ location, name, address, phone, _id, city }) => {
-    if (city === "Helsinki")
-      L.geoJSON(location)
+    if (filters.length === 0 || filters.includes(city)) {
+      const marker = L.geoJSON(location)
         .bindPopup(
           `<h2>${name}</h2>
-        <p>${address}</p>
-         <p>${phone}</p>
-         <a class="menu-link" data-id='${_id}'>Menu</a>
-    `
+          <p>${address}</p>
+          <p>${phone}</p>
+          <a class="menu-link" data-id='${_id}'>Menu</a>`
         )
         .addTo(map);
-  });
-  map.on("popupopen", function (e) {
-    const popup = e.popup;
-    const menuLink = popup._contentNode.querySelector(".menu-link");
-    if (menuLink) {
-      menuLink.addEventListener("click", async function (event) {
-        event.preventDefault();
-        const id = this.getAttribute("data-id");
-        await renderMenu(id);
+
+      marker.on("popupopen", function (e) {
+        const popup = e.popup;
+        const menuLink = popup._contentNode.querySelector(".menu-link");
+        if (menuLink) {
+          menuLink.addEventListener("click", async function (event) {
+            event.preventDefault();
+            const id = this.getAttribute("data-id");
+            await renderMenu(id);
+          });
+        }
       });
     }
   });
@@ -138,10 +155,11 @@ const initializeTabs = () => {
   });
 };
 initializeTabs();
+
 const renderMenu = async (id) => {
   try {
+    let processedDays = new Set();
     const { days } = await fetchData(`${apiUrl}restaurants/weekly/${id}/fi`);
-    console.log(days);
     const menuTabs = document.querySelectorAll(".menu-content");
     menuTabs.forEach((tab) => {
       tab.style.display = "none";
@@ -151,16 +169,14 @@ const renderMenu = async (id) => {
       .toLowerCase();
     days.forEach(({ date, courses }) => {
       const weekday = date.split(" ")[0].toLowerCase();
-      console.log(weekday);
       const menuTab = document.querySelector(`#${weekday}Menu`);
       menuTab.innerHTML = "";
-      if (courses.length === 0) {
-        menuTab.innerHTML = "<span>NO MENU AVAILABLE</span>";
-        menuTab.classList.add("randomclass");
-      } else {
+
+      if (courses && courses.length > 0) {
         const menuTable = document.createElement("table");
         menuTable.classList.add("menu");
         menuTab.appendChild(menuTable);
+
         const tr = document.createElement("tr");
         const thName = document.createElement("th");
         const thPrice = document.createElement("th");
@@ -177,13 +193,33 @@ const renderMenu = async (id) => {
           const mPrice = document.createElement("td");
           const mDiet = document.createElement("td");
           mName.innerText = course.name;
-
           mPrice.innerText = course.price ? course.price : "Ei tiedossa";
-
           mDiet.innerText = course.diets ? course.diets : "Ei tiedossa";
           tr.append(mName, mPrice, mDiet);
           menuTable.append(tr);
         });
+
+        processedDays.add(weekday);
+      } else {
+        menuTab.innerHTML = "<span>NO MENU AVAILABLE</span>";
+        menuTab.classList.add("randomclass");
+      }
+    });
+
+    //backup if some days are missing ie weekends
+    [
+      "maanantai",
+      "tiistai",
+      "keskiviikko",
+      "torstai",
+      "perjantai",
+      "lauantai",
+      "sunnuntai",
+    ].forEach((day) => {
+      if (!processedDays.has(day)) {
+        const menuTab = document.querySelector(`#${day}Menu`);
+        menuTab.innerHTML = "<span>NO MENU AVAILABLE</span>";
+        menuTab.classList.add("randomclass");
       }
     });
 
