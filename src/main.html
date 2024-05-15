@@ -18,7 +18,7 @@
       integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
       crossorigin=""
     ></script>
-    <script src="main.js" defer></script>
+    <script type="module" src="main.js"></script>
   </head>
   <body>
     <div class="container">
@@ -56,13 +56,15 @@
       </div>
 
       <div class="wrapper">
-        <button class="dropbtn">Login</button>
+        <a class="dropbtn" id="loginBtn"style="display: none;" >Login</a>
+        <a><div id="avatar-container" class="dropbtn" style="display: none;">
+          <img id="avatar-img" src="user-avatar.svg" alt="Avatar">
+        </div>
+        </a>
         <div class="dropdown">
-          <!--- CHANGE BUTTON TEXT TO USERNAME WHEN LOGGED IN -->
-
           <div class="dropdown-content">
-            <div id="logged-out">
-              <form id="loginForm" style="display: flex">
+            <div id="logged-out"style="display: none">
+              <form id="loginForm">
                 <h3>Login</h3>
                 <input type="text"id="username" name="username" placeholder="Username" />
                 <input type="password"id="password" name="password" placeholder="Password" />
@@ -73,8 +75,8 @@
             </div>
             <!-- USER SETTINGS,LOGOUT ETC AFTER LOGGED IN-->
             <div class="logged-in-content" id="logged" style="display: none">
-              <a href="#">User Settings</a>
-              <a href="#">Logout</a>
+              <a id="settings-link">User Settings</a>
+              <a id="logout-btn">Logout</a>
             </div>
           </div>
         </div>
@@ -128,7 +130,7 @@
           <input type="email" id="email" name="email" placeholder="Enter your email">
           <button type="submit">Register</button>
         </form>
-        
+
     </dialog>
 ></div>
   </body>
