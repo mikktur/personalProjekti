@@ -24,36 +24,23 @@
     <div class="container">
       <!-- CONTAINS SEARCH, FAVORITE RESTAURANTS,FILTERS ETC-->
       <div class="sidePanelContainer">
-        <button id="showSide">-></button>
+
         <!-- CONTAINS SEARCH, FAVORITE RESTAURANTS, FILTERS, ETC-->
         <aside class="sidePanel">
+          <button id="hideSide">
+            <span>&times;</span>
+          </button>
           <div id="contentSection">
             <div class="filter">
               <h3>Filter by city</h3>
               <div id="city-filters"></div>
-              <div class="select-container">
-                <label for="companies">Filter by company</label>
-                <select name="companies" id="companies">
-                  <option value="None">None</option>
-                  <option value="Tampere">1</option>
-                  <option value="Oulu">2</option>
-                  <option value="Helsinki">3</option>
-                  <option value="Vantaa">4</option>
-                </select>
-              </div>
-            </div>
-            <!--VISIBLE ONLY FOR LOGGED USERS-->
-            <!--maybe add favrestaurant infos directly to sidepanel(?)-->
-            <div class="favorites">
-              <h2>FAVORITES HERE</h2>
-              <ul>
-                <li>Favorite 1</li>
-                <li>Favorite 2</li>
-              </ul>
             </div>
           </div>
         </aside>
+
       </div>
+      <div id="sidepanel2"><a id="showSide"><img src="menuIcon.png">
+      <a></div>
 
       <div class="wrapper">
         <a class="dropbtn" id="loginBtn"style="display: none;" >Login</a>

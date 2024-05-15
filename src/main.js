@@ -1,4 +1,5 @@
-const button = document.querySelector('#showSide');
+const showSidebtn = document.querySelector('#showSide');
+const hideSideBtn = document.getElementById('hideSide');
 const sidePane = document.querySelector('.sidePanel');
 const menuModal = document.querySelector('#restaurantModal');
 const dropBtn = document.querySelectorAll('.dropbtn');
@@ -13,7 +14,11 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution:
     '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
 }).addTo(map);
-button.addEventListener('click', (e) => {
+showSidebtn.addEventListener('click', (e) => {
+  e.preventDefault();
+  sidePane.classList.toggle('active');
+});
+hideSideBtn.addEventListener('click', (e) => {
   e.preventDefault();
   sidePane.classList.toggle('active');
 });
@@ -34,7 +39,6 @@ settingsLink.addEventListener('click', (e) => {
 const renderSettingsForm = () => {
   const {username, email} = JSON.parse(sessionStorage.getItem('user'));
   settingsForm.innerHTML = `<input type="text" name="username" placeholder="${username}" />
-  <input type="password" name="password" placeholder="password" />
   <input type="text" name="email" placeholder="${email}" />
   <button type="submit">Save</button>
   <button type="button" id="cancelButton">Cancel</button>`;
@@ -72,7 +76,7 @@ const setToCurrentLocation = () => {
 async function fetchData(url, options) {
   try {
     const response = await fetch(url, options);
-    console.log(response);
+
     if (response.ok) {
       const jsonData = await response.json();
       return jsonData;
@@ -121,7 +125,6 @@ const addMarkersToMap = async (logged) => {
   const restaurants = await fetchData(apiUrl + 'restaurants');
   const user = logged ? JSON.parse(sessionStorage.getItem('user')) : '';
   const favorite = logged ? user.favouriteRestaurant : '';
-  console.log(restaurants);
 
   map.eachLayer((layer) => {
     if (layer instanceof L.Marker) {
@@ -131,6 +134,11 @@ const addMarkersToMap = async (logged) => {
 
   restaurants.forEach(({location, name, address, phone, _id, city}) => {
     if (filters.length === 0 || filters.includes(city)) {
+      let popHtml = `<h2>${name}</h2>
+      <p>${address}</p>
+      <p>${phone}</p>
+      <a class="menu-link" data-id='${_id}'>Menu</a><br>
+      `;
       let icon = false;
       const meatIcon = L.icon({
         iconUrl: 'meat.png',
@@ -143,8 +151,8 @@ const addMarkersToMap = async (logged) => {
         location.coordinates[0],
       ];
       if (user) {
+        popHtml += `<a  id="favorite" data-id='${_id}'><img src="favourite.png"></a>`;
         if (_id === favorite) {
-          console.log('test');
           icon = true;
         }
       }
@@ -152,13 +160,7 @@ const addMarkersToMap = async (logged) => {
         location.coordinates,
         icon ? {icon: meatIcon} : {}
       )
-        .bindPopup(
-          `<h2>${name}</h2>
-          <p>${address}</p>
-          <p>${phone}</p>
-          <a class="menu-link" data-id='${_id}'>Menu</a><br>
-          <a  id="favorite" data-id='${_id}'>add to favorites!</a>`
-        )
+        .bindPopup(popHtml)
         .addTo(map);
 
       marker.on('popupopen', function (e) {
@@ -172,21 +174,23 @@ const addMarkersToMap = async (logged) => {
             await renderMenu(id);
           });
         }
-        favoriteLink.addEventListener('click', async function (event) {
-          event.preventDefault();
-          if (user) {
-            const id = this.getAttribute('data-id');
-            console.log(id);
-            const token = sessionStorage.getItem('token');
-            try {
-              const newUser = await updateInfo(token, id);
-              sessionStorage.setItem('user', JSON.stringify(newUser.data));
-              addMarkersToMap(user);
-            } catch (e) {
-              console.error(e.message);
+        if (user) {
+          favoriteLink.addEventListener('click', async function (event) {
+            event.preventDefault();
+            if (user) {
+              const id = this.getAttribute('data-id');
+
+              const token = sessionStorage.getItem('token');
+              try {
+                const newUser = await updateInfo(token, id);
+                sessionStorage.setItem('user', JSON.stringify(newUser.data));
+                addMarkersToMap(user);
+              } catch (e) {
+                console.error(e.message);
+              }
             }
-          }
-        });
+          });
+        }
       });
     }
   });
@@ -198,24 +202,22 @@ settingsForm.addEventListener('submit', async (e) => {
 
   const formData = new FormData(e.target);
   const username = formData.get('username');
-  const password = formData.get('password');
   const email = formData.get('email');
   const token = sessionStorage.getItem('token');
   try {
-    await updateInfo(token, undefined, username, password, email);
-    location.reload();
+    await updateInfo(token, undefined, username, email);
   } catch (e) {
     console.error(e.message);
   }
 });
-// not sure if this is a good approach but it works...
-const updateInfo = async (token, restaurant, username, password, email) => {
+// not sure if this is a good approach but it seems to  work.
+const updateInfo = async (token, restaurant, username, email) => {
   const bodyContent = {
     username: username ? username : undefined,
     favouriteRestaurant: restaurant ? restaurant : undefined,
-    password: password ? password : undefined,
     email: email ? email : undefined,
   };
+
   const options = {
     method: 'PUT',
     headers: {
@@ -233,12 +235,16 @@ const updateInfo = async (token, restaurant, username, password, email) => {
 };
 document
   .getElementById('register-form')
-  .addEventListener('submit', function (event) {
+  .addEventListener('submit', async function (event) {
     event.preventDefault();
 
     const formData = new FormData(event.target);
-    register(formData);
-    event.target.reset();
+    try {
+      await register(formData);
+      event.target.reset();
+    } catch (e) {
+      console.log(e.message);
+    }
   });
 const register = async (formData) => {
   const bodyContent = {
@@ -246,7 +252,7 @@ const register = async (formData) => {
     password: formData.get('password'),
     email: formData.get('email'),
   };
-  console.log(bodyContent);
+
   const options = {
     method: 'POST',
     headers: {
@@ -256,9 +262,8 @@ const register = async (formData) => {
   };
   try {
     const result = await fetchData(apiUrl + `users`, options);
-    console.log(result);
   } catch (e) {
-    console.log(e);
+    throw e;
   }
 };
 document
@@ -289,10 +294,9 @@ const login = async (userName, password) => {
   try {
     const result = await fetchData(apiUrl + `auth/login`, options);
     if (result) {
-      console.log(result.data);
       sessionStorage.setItem('token', result.token);
       sessionStorage.setItem('user', JSON.stringify(result.data));
-      console.log(sessionStorage.getItem('token'));
+
       location.reload();
     }
   } catch (e) {
@@ -338,7 +342,6 @@ const initializeTabs = () => {
 initializeTabs();
 
 const renderMenu = async (id) => {
-  console.log(id);
   try {
     let processedDays = new Set();
     const {days} = await fetchData(`${apiUrl}restaurants/weekly/${id}/fi`);
@@ -383,8 +386,8 @@ const renderMenu = async (id) => {
 
         processedDays.add(weekday);
       } else {
-        menuTab.innerHTML = '<span>NO MENU AVAILABLE</span>';
-        menuTab.classList.add('randomclass');
+        menuTab.innerHTML =
+          '<span class="no-menu-span" >NO MENU AVAILABLE</span>';
       }
     });
 
@@ -400,8 +403,8 @@ const renderMenu = async (id) => {
     ].forEach((day) => {
       if (!processedDays.has(day)) {
         const menuTab = document.querySelector(`#${day}Menu`);
-        menuTab.innerHTML = '<span>NO MENU AVAILABLE</span>';
-        menuTab.classList.add('randomclass');
+        menuTab.innerHTML =
+          '<span class="no-menu-span" >NO MENU AVAILABLE</span>';
       }
     });
 
@@ -451,9 +454,8 @@ const checkSession = async () => {
 };
 
 (async () => {
-  await setToCurrentLocation();
   const user = await checkSession();
-  console.log(user);
+
   if (user) {
     sessionStorage.setItem('user', JSON.stringify(user));
     document.getElementById('avatar-container').style.display = 'block';
