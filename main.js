@@ -16,10 +16,8 @@ async function fetchData(url, options) {
       const jsonData = await response.json();
       return jsonData;
     } else {
-      if (response.status === 404) throw new Error("404, Not found");
-      if (response.status === 500)
-        throw new Error("500, internal server error");
-      throw new Error(response.status);
+      const errorData = await response.json();
+      throw new Error(errorData.message);
     }
   } catch (error) {
     throw error;
@@ -127,6 +125,39 @@ const addMarkersToMap = async () => {
     }
   });
 };
+document
+  .getElementById("loginForm")
+  .addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    const formData = new FormData(event.target);
+
+    const username = formData.get("username");
+    const password = formData.get("password");
+    login(username, password);
+    event.target.reset();
+  });
+const login = async (userName, password) => {
+  const bodyContent = {
+    username: userName,
+    password: password,
+  };
+  const options = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(bodyContent),
+  };
+  try {
+    const result = await fetchData(apiUrl + `auth/login`, options);
+    console.log(result);
+  } catch (e) {
+    const loginerror = document.querySelector("#login-error");
+    loginerror.innerText = e.message;
+  }
+};
+
 const initializeTabs = () => {
   const hideAllTabs = () => {
     const menuTabs = document.querySelectorAll(".menu-content");
@@ -157,6 +188,7 @@ const initializeTabs = () => {
 initializeTabs();
 
 const renderMenu = async (id) => {
+  console.log(id);
   try {
     let processedDays = new Set();
     const { days } = await fetchData(`${apiUrl}restaurants/weekly/${id}/fi`);
@@ -206,7 +238,7 @@ const renderMenu = async (id) => {
       }
     });
 
-    //backup if some days are missing ie weekends
+    //backup if some days are missing ie. weekends
     [
       "maanantai",
       "tiistai",

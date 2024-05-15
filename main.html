@@ -61,12 +61,16 @@
           <!--- CHANGE BUTTON TEXT TO USERNAME WHEN LOGGED IN -->
 
           <div class="dropdown-content">
-            <form id="loginForm" style="display: flex">
-              <h2>Login</h2>
-              <input type="text" placeholder="Username" />
-              <input type="password" placeholder="Password" />
-              <button type="submit" onclick="login()">Login</button>
-            </form>
+            <div id="logged-out">
+              <form id="loginForm" style="display: flex">
+                <h3>Login</h3>
+                <input type="text" placeholder="Username" />
+                <input type="password" placeholder="Password" />
+                <span id="login-error"></span>
+                <button type="submit">Login</button>
+              </form>
+              <a id="register">register</a>
+            </div>
             <!-- USER SETTINGS,LOGOUT ETC AFTER LOGGED IN-->
             <div class="logged-in-content" id="logged" style="display: none">
               <a href="#">User Settings</a>
