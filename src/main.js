@@ -189,6 +189,7 @@ const addMarkersToMap = async (logged) => {
           menuLink.addEventListener('click', async function (event) {
             event.preventDefault();
             const id = this.getAttribute('data-id');
+
             await renderMenu(id);
           });
         }
@@ -374,6 +375,7 @@ const renderMenu = async (id) => {
   try {
     let processedDays = new Set();
     const {days} = await fetchData(`${apiUrl}restaurants/weekly/${id}/fi`);
+    console.log('test');
     const menuTabs = document.querySelectorAll('.menu-content');
     menuTabs.forEach((tab) => {
       tab.style.display = 'none';
@@ -448,7 +450,10 @@ const renderMenu = async (id) => {
     const activeTab = document.querySelector('#' + currentDate + 'Menu');
     activeTab.style.display = 'block';
   } catch (e) {
-    menuModal.insertAdjacentHTML = `<h2>${e.message}</h2>`;
+    const tabs = document.querySelectorAll('.menu-content');
+    tabs.forEach((tab) => {
+      tab.innerHTML = '<span class="no-menu-span" >NO MENU AVAILABLE</span>';
+    });
   }
   menuModal.classList.toggle('active');
 };
