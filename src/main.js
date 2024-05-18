@@ -58,20 +58,26 @@ registerLink.addEventListener('click', (e) => {
   registerDia.showModal();
 });
 
-const setToCurrentLocation = () => {
-  if ('geolocation' in navigator) {
-    navigator.geolocation.getCurrentPosition(
-      function (position) {
-        var coords = [position.coords.latitude, position.coords.longitude];
-        map.setView(coords, 13);
-      },
-      function (error) {
-        console.error('Error getting user location:', error.message);
-      }
-    );
-  } else {
-    console.error('Geolocation is not supported in this browser.');
-  }
+//not sure how accurate the location is.
+const getCurrentLocation = () => {
+  return new Promise((resolve, reject) => {
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        function (position) {
+          var coords = [position.coords.latitude, position.coords.longitude];
+          resolve(coords);
+        },
+        function (error) {
+          console.error('Error getting user location:', error.message);
+          reject(error);
+        }
+      );
+    } else {
+      const error = new Error('Geolocation is not supported in this browser.');
+      console.error(error.message);
+      reject(error);
+    }
+  });
 };
 async function fetchData(url, options) {
   try {
@@ -143,13 +149,24 @@ const addMarkersToMap = async (logged) => {
   const restaurants = await fetchData(apiUrl + 'restaurants');
   const user = logged ? JSON.parse(sessionStorage.getItem('user')) : '';
   const favorite = logged ? user.favouriteRestaurant : '';
-
+  const currLoc = await getCurrentLocation();
+  console.log(currLoc);
   map.eachLayer((layer) => {
     if (layer instanceof L.Marker) {
       map.removeLayer(layer);
     }
   });
-
+  const currLocIcon = L.icon({
+    iconUrl: 'img/here.png',
+    iconSize: [40, 50],
+    iconAnchor: [15, 41],
+    popupAnchor: [8, -40],
+  });
+  if (currLoc) {
+    L.marker(currLoc, {icon: currLocIcon})
+      .bindPopup('<b>You are here</b>')
+      .addTo(map);
+  }
   restaurants.forEach(({location, name, address, phone, _id, city}) => {
     if (filters.length === 0 || filters.includes(city)) {
       let popHtml = `<h2>${name}</h2>
@@ -375,7 +392,7 @@ const renderMenu = async (id) => {
   try {
     let processedDays = new Set();
     const {days} = await fetchData(`${apiUrl}restaurants/weekly/${id}/fi`);
-    console.log('test');
+
     const menuTabs = document.querySelectorAll('.menu-content');
     menuTabs.forEach((tab) => {
       tab.style.display = 'none';
@@ -392,7 +409,6 @@ const renderMenu = async (id) => {
         const menuTable = document.createElement('table');
         menuTable.classList.add('menu');
         menuTab.appendChild(menuTable);
-
         const tr = document.createElement('tr');
         const thName = document.createElement('th');
         const thPrice = document.createElement('th');
