@@ -312,6 +312,7 @@ a:hover {
 #showSide {
   margin-top: 2rem;
   cursor: pointer;
+  height: fit-content;
 }
 #showSide img {
   width: 50px;
